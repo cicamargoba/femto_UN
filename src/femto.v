@@ -15,7 +15,7 @@ module tt_um_femto(
   reg resetn;
   /* verilator lint_on SYNCASYNCNET */
   always @(negedge clk) resetn <= rst_n;
-
+  /* verilator lint_off UNDRIVEN */
 	
 	femto femto0( 
 		.clk          (clk), 
