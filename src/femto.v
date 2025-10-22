@@ -1,3 +1,4 @@
+/* verilator lint_off SYNCASYNCNET */
 module tt_um_femto(
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
@@ -11,7 +12,7 @@ module tt_um_femto(
 
   // Register the reset on the negative edge of clock for safety.
   // This also allows the option of async reset in the design, which might be preferable in some cases
-  /* verilator lint_off SYNCASYNCNET */
+  
   reg resetn;
   /* verilator lint_on SYNCASYNCNET */
   always @(negedge clk) resetn <= rst_n;
