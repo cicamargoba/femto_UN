@@ -12,10 +12,39 @@ module tt_um_femto(
   // Register the reset on the negative edge of clock for safety.
   // This also allows the option of async reset in the design, which might be preferable in some cases
   /* verilator lint_off SYNCASYNCNET */
-  reg rst_reg_n;
+  reg resetn;
   /* verilator lint_on SYNCASYNCNET */
-  always @(negedge clk) rst_reg_n <= rst_n;
-
+  always @(negedge clk) resetn <= rst_n;
+  wire spi_mosi;
+  wire spi_miso;
+  wire spi_cs_n;
+  wire spi_clk;
+  wire spi_mosi_ram;
+  wire spi_miso_ram;
+  wire spi_cs_n_ram;
+  wire spi_clk_ram;
+  wire LEDS;
+  wire RXD;
+  wire TXD;
+	
+	femto femto0( 
+		.clk(clk), 
+		.resetn(resetn), 
+		.spi_mosi     (uo_out[0]),
+		.spi_mosi_ram (uo_out[1]),
+		.spi_cs_n     (uo_out[2]),
+		.spi_cs_n_ram (uo_out[3]),
+		.spi_clk_ram  (uo_out[4]),		
+		.spi_clk      (uo_out[5]),
+		.LEDS         (uo_out[6]),
+		.TXD          (uo_out[7])
+		
+		.spi_miso     (ui_in[0]),
+		.spi_miso_ram (ui_in[1]),
+		.RXD          (ui_in[2])
+		
+	)
+	
 
 endmodule
 
