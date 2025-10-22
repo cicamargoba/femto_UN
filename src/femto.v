@@ -37,6 +37,9 @@ module tt_um_femto(
 	);
 	
 	wire _unused = &{ena, uio_oe[7:0] , uio_in[7:0], uio_out[7:0], ui_in[7:3], 1'b0};
+	assign uio_out = 8'h00;
+	assign uio_oe = 8'h00;
+	
 /* verilator lint_on UNDRIVEN */
 endmodule
 
