@@ -7,7 +7,7 @@ module MappedSPIRAM(
     input wire          wr,         // write strobe		
 	input wire [15:0]   word_address,  // address of the word to be read
 
-    input wire [31:0]   wdata,         // data to be written
+	input wire [7:0]   wdata,         // data to be written
     output wire [31:0]  rdata,         // data read
     output reg          rbusy,        // asserted if busy receiving data
     output reg          wbusy,         // asserted if busy writing data		    
@@ -30,8 +30,6 @@ module MappedSPIRAM(
 
  
  reg [1:0] state;
- reg clk_div;
-
 
 
    reg [5:0]  snd_bitcount;
@@ -44,16 +42,13 @@ module MappedSPIRAM(
 
 always @(negedge clk) begin
     if (!reset) begin
-      clk_div     <= 0;
       div_counter <= 0;
     end
     else begin
       if (div_counter >= divisor) begin
-        clk_div      <= 1;
         div_counter  <= 0;
       end
       else begin
-        clk_div      <= 0;
         div_counter  <=  div_counter + 1;
       end
     end
