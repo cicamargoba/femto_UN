@@ -60,7 +60,7 @@ module femto (
    wire [31:0] mem_address;
    reg  [31:0] mem_rdata;
    wire mem_rstrb;
-   wire [31:0] mem_wdata;
+   wire  [7:0] mem_wdata;
    wire [3:0]  mem_wmask;
 
    wire mapped_spi_flash_rbusy;
@@ -100,8 +100,8 @@ module femto (
    MappedSPIRAM mapped_spi_ram(
       .clk(clk),
       .reset(resetn),
-      .word_address(mem_address[21:2]),
-      .wdata(mem_wdata),
+	   .word_address(mem_address[17:2]),
+	   .wdata(mem_wdata[7:0]),
       .rd(cs[6] & rd),
       .wr(cs[6] & wr),
       .rbusy(spi_ram_rbusy),
