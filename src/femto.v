@@ -33,7 +33,7 @@ module tt_um_femto(
 		.spi_miso_ram (ui_in[1]),
 		.RXD          (ui_in[2])
 		
-	)
+	);
 	
 
 endmodule
