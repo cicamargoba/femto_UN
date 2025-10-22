@@ -5,7 +5,7 @@ module MappedSPIRAM(
     input wire          reset,         // system reset
     input wire 	        rd,         // read strobe
     input wire          wr,         // write strobe		
-    input wire [19:0]   word_address,  // address of the word to be read
+	input wire [15:0]   word_address,  // address of the word to be read
 
     input wire [31:0]   wdata,         // data to be written
     output wire [31:0]  rdata,         // data read
