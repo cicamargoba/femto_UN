@@ -1,7 +1,7 @@
 # Tiny Tapeout project information
 project:
   title:        "UNAL's RISCV "      # Project title
-  author:       "Carlos Camargo"      # Your name
+  author:       "Carlos Camargo Bareño"      # Your name
   discord:      "cicamargo"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "Bruno Levi's femtoRV imnplementation"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
