@@ -203,7 +203,7 @@ module femto (
 //        16'h0042: cs= 7'b0001000;	//mult
 //        16'h0043: cs= 7'b0000100;	//div
 //        16'h0044: cs= 7'b0000010;	//bin_to_bcd
-//        16'h0001: cs= 7'b1000000;   //dpRAM
+        16'h0001: cs= 7'b1000000;   //dpRAM
         default: cs= 7'b0000001;
       endcase
   end
