@@ -24,31 +24,29 @@ module MappedSPIRAM(
  parameter WAIT_INST  = 2'b01;
  parameter SEND       = 2'b10;
  parameter RECEIVE    = 2'b11;
-
  parameter divisor    = 2;
 
-
- 
  reg [1:0] state;
-
+ reg clk_div;
 
    reg [5:0]  snd_bitcount;
    reg [31:0] cmd_addr;
    reg [5:0]  rcv_bitcount;
    reg [31:0] rcv_data;
-
    reg [5:0]  div_counter;
-
 
 always @(negedge clk) begin
     if (!reset) begin
+      clk_div     <= 0;
       div_counter <= 0;
     end
     else begin
       if (div_counter >= divisor) begin
+        clk_div      <= 1;
         div_counter  <= 0;
       end
       else begin
+        clk_div      <= 0;
         div_counter  <=  div_counter + 1;
       end
     end
@@ -81,21 +79,21 @@ always @(negedge clk) begin
       START:begin
         CS_N         <= 1'b1;
         rbusy        <= 1'b0;
-        wbusy        <= 1'b0;
         snd_bitcount <= 6'd0;
         rcv_bitcount <= 6'd0;
         state        <= WAIT_INST;
+        wbusy        <= 1'b0;
       end
 
       WAIT_INST: begin
         if (rd) begin
           CS_N         <= 1'b0;
           rbusy        <= 1'b1;
-          wbusy        <= 1'b0;
           snd_bitcount <= 6'd24;
-          rcv_bitcount <= 6'd32;
           cmd_addr     <= {8'h03,word_address[15:0],8'h00};
           state        <= SEND;
+          rcv_bitcount <= 6'd32;
+          wbusy        <= 1'b0;
         end
         else if (wr) begin
           CS_N         <= 1'b0;
@@ -112,7 +110,7 @@ always @(negedge clk) begin
       end
 
       SEND: begin
-        if(CLK) begin
+        if(clk_div) begin
             if(snd_bitcount == 1) begin
                 state        <= RECEIVE;
             end
@@ -125,7 +123,7 @@ always @(negedge clk) begin
       end
 
       RECEIVE: begin
-        if(CLK) begin
+        if(clk_div) begin
           if(rcv_bitcount == 0) begin
             state         <= START;
           end
@@ -143,8 +141,6 @@ always @(negedge clk) begin
     endcase
   end
 end
-
-
    assign  MOSI  = cmd_addr[31];
 
 //   assign  CLK   = !CS_N && !clk; // CLK needs to be inverted (sample on posedge, shift of negedge) 
@@ -152,6 +148,5 @@ end
 
    // since least significant bytes are read first, we need to swizzle...
    assign rdata = {rcv_data[7:0],rcv_data[15:8],rcv_data[23:16],rcv_data[31:24]};
-
 
 endmodule
