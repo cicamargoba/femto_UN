@@ -1,4 +1,4 @@
- `define SPI_FLASH_DUMMY_CLOCKS 0
+`define SPI_FLASH_DUMMY_CLOCKS 0
 
 module MappedSPIFlash( 
     input wire 	       clk,          // system clock
@@ -26,18 +26,23 @@ module MappedSPIFlash(
  reg [2:0] state;
  reg clk_div;
 
-   reg [5:0]  snd_bitcount;
-   reg [31:0] cmd_addr;
-   reg [5:0]  rcv_bitcount;
-   reg [31:0] rcv_data;
-   reg [5:0]  div_counter;
+// DESPUÉS
+reg [5:0]  snd_bitcount;
+reg [31:0] cmd_addr;
+reg [5:0]  rcv_bitcount;
+reg [31:0] rcv_data;
+reg [5:0]  div_counter;
+reg        clk_div_rise;      // <-- linea nueva
 
 always @(negedge clk) begin
-    if (!reset) begin
-      clk_div     <= 0;
-      div_counter <= 0;
+    if (!reset || state == WAIT_STRB) begin
+      clk_div      <= 0;
+      clk_div_rise <= 0;      // <-- linea nueva
+      div_counter  <= 0;
     end
     else begin
+      clk_div_rise <= (div_counter == divisor/2);   // <-- linea nueva
+
       if (div_counter >= divisor) begin
         clk_div      <= 1;
         div_counter  <= 0;
@@ -50,7 +55,7 @@ always @(negedge clk) begin
 end
 
 always @(negedge clk) begin
-    if (!reset) begin
+    if (!reset || state == WAIT_STRB) begin
       CLK    <= 0;
     end
     else begin
@@ -84,7 +89,7 @@ always @(negedge clk) begin
         if (rstrb) begin
           CS_N         <= 1'b0;
           rbusy        <= 1'b1;
-          snd_bitcount <= 6'd32;
+          snd_bitcount <= 6'd31;
           cmd_addr     <= {8'h03, 2'b00,word_address[19:0], 2'b00};
           state        <= SEND;
 
@@ -96,7 +101,7 @@ always @(negedge clk) begin
 
       SEND: begin
         if(clk_div) begin
-            if(snd_bitcount == 1) begin
+            if(snd_bitcount == 0) begin
                 rcv_bitcount <= 6'd32;
                 state         <= RECEIVE;
             end
@@ -108,18 +113,21 @@ always @(negedge clk) begin
         end
       end
 
-      RECEIVE: begin
-        if(clk_div) begin
-          if(rcv_bitcount == 0) begin
-            state         <= START;
-          end
-          else begin
-            rcv_bitcount <= rcv_bitcount - 6'd1;
-            rcv_data     <= {rcv_data[30:0],MISO};
-          state         <= RECEIVE;  
-          end
-        end
-      end
+// DESPUÉS
+RECEIVE: begin
+  if(clk_div_rise) begin        // <-- unico cambio en esta linea
+    if(rcv_bitcount == 1) begin
+      rcv_data <= {rcv_data[30:0],MISO};
+      state    <= START;
+    end
+    else begin
+      rcv_bitcount <= rcv_bitcount - 6'd1;
+      rcv_data     <= {rcv_data[30:0],MISO};
+      state        <= RECEIVE;
+    end
+  end
+end
+
 
        default: 
          state <= START;
